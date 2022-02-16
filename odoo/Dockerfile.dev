@@ -1,0 +1,18 @@
+ARG MAJOR_VERSION
+ARG REVISION_DATE
+FROM icsglobe2018/odoo:$MAJOR_VERSION-$REVISION_DATE-dev
+
+USER root
+
+COPY requirements.txt requirements.txt
+RUN pip3 install --no-cache-dir -r requirements.txt
+
+ARG USER_ID=1000
+ARG GROUP_ID=1000
+
+RUN groupadd -f --gid $GROUP_ID group
+RUN usermod -u $USER_ID -g $GROUP_ID user
+
+RUN chown -R user:$(id -g user) /mnt/data-dir
+
+USER user

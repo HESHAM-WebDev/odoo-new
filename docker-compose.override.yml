@@ -1,0 +1,35 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: ./odoo/Dockerfile.dev
+      args:
+        USER_ID: ${USER_ID:-1000}
+        GROUP_ID: ${GROUP_ID:-1000}
+    restart: "no"
+    ports:
+      - 8069:8069
+      - 8072:8072
+    environment:
+      - PYTHONPATH=/mnt/workspace/dist-packages
+      - DATA_DIR=/mnt/data-dir
+      - ADDONS_PATH=/mnt/workspace/addons
+    volumes:
+      - odoo-dev-data:/mnt/data-dir
+      - ./.:/mnt/workspace
+    command: tail -f /dev/null
+  db:
+    restart: "no"
+  pgadmin:
+    image: dpage/pgadmin4:6.4
+    restart: "no"
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@ics-globe.com
+      - PGADMIN_DEFAULT_PASSWORD=admin
+    volumes:
+      - ./config/pgadmin.servers.json:/pgadmin4/servers.json
+    ports:
+      - 8070:80
+
+volumes:
+  odoo-dev-data:
